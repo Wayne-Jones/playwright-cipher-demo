@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { albums } from "../src/data/albums";
 import { test } from "./fixtures/site";
 
 /**
@@ -31,7 +32,7 @@ test.describe("Track 04 — Cadence (resilient network handling)", () => {
 
     await expect(page.getByRole("heading", { name: /every album/i })).toBeVisible();
     const fallbacks = page.locator("[data-testid='album-art-fallback']");
-    await expect(fallbacks).toHaveCount(9);
+    await expect(fallbacks).toHaveCount(albums.length);
     await expect(page.locator("img.album-art__image")).toHaveCount(0);
   });
 });

@@ -13,7 +13,7 @@ function artworkUrl600(url: string | undefined): string | undefined {
 async function findArtwork(title: string, artist: string): Promise<string | undefined> {
   const term = encodeURIComponent(`${artist} ${title}`);
   const res = await fetch(
-    `https://itunes.apple.com/search?term=${term}&entity=album&limit=10`,
+    `https://itunes.apple.com/search?term=${term}&entity=album&limit=10&media=music&country=US`,
     { headers: { "user-agent": "playwright-cipher-demo/1.0" } }
   );
   if (!res.ok) throw new Error(`iTunes search failed: ${res.status}`);
@@ -30,7 +30,31 @@ async function findArtwork(title: string, artist: string): Promise<string | unde
       return artworkUrl600(result.artworkUrl100);
     }
   }
+  const fallback = await findArtworkDeezer(title, artist);
+  if (fallback) return fallback;
   return artworkUrl600(json.results[0]?.artworkUrl100);
+}
+
+async function findArtworkDeezer(title: string, artist: string): Promise<string | undefined> {
+  const term = encodeURIComponent(`${title} ${artist}`);
+  const res = await fetch(`https://api.deezer.com/search/album?q=${term}&limit=5`, {
+    headers: { "user-agent": "playwright-cipher-demo/1.0" },
+  });
+  if (!res.ok) return undefined;
+  const json = (await res.json()) as {
+    data?: { title: string; artist: { name: string }; cover_big: string }[];
+  };
+
+  const normalized = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  for (const result of json.data ?? []) {
+    if (
+      normalized(result.title).includes(normalized(title).slice(0, 14)) &&
+      normalized(result.artist.name).includes(normalized(artist).slice(0, 8))
+    ) {
+      return result.cover_big.replace(/\/500x500-/, "/600x600-");
+    }
+  }
+  return undefined;
 }
 
 for (const album of albums) {

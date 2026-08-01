@@ -2,6 +2,8 @@ import { useId } from "react";
 import type { Album } from "../data/albums";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { AlbumArt } from "./AlbumArt";
+import { Comments } from "./Comments";
+import { RateAlbum } from "./RateAlbum";
 import { RatingMics } from "./RatingMics";
 
 interface AlbumModalProps {
@@ -55,6 +57,10 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
             ))}
           </div>
           <p className="modal__review">{album.review}</p>
+          <div className="modal__row">
+            <RateAlbum slug={album.slug} />
+            <Comments slug={album.slug} />
+          </div>
         </div>
       </div>
     </div>

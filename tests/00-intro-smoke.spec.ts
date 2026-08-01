@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { albums } from "../src/data/albums";
 import { test } from "./fixtures/site";
 
 /**
@@ -9,11 +10,11 @@ import { test } from "./fixtures/site";
  */
 
 test.describe("Intro — the crate opens", () => {
-  test("the site loads with nine albums in the record bin", async ({ page, boombox }) => {
+  test("the site loads with every album in the record bin", async ({ page, boombox }) => {
     await boombox.goto();
 
     await expect(page.getByRole("heading", { name: /every album/i })).toBeVisible();
-    await expect(page.locator("[data-testid='album-card']")).toHaveCount(9);
+    await expect(page.locator("[data-testid='album-card']")).toHaveCount(albums.length);
     await expect(page.getByText("Boombox Reviews").first()).toBeVisible();
   });
 
@@ -21,9 +22,9 @@ test.describe("Intro — the crate opens", () => {
     await boombox.goto();
 
     const mics = page.locator("[data-testid='mics']");
-    await expect(mics).toHaveCount(9);
+    await expect(mics).toHaveCount(albums.length);
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < albums.length; i++) {
       await expect(mics.nth(i)).toHaveAttribute("aria-label", /^[1-5] out of 5 mics$/);
     }
   });

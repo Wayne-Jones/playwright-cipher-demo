@@ -27,8 +27,9 @@ export default function App() {
           Every album gets a <span className="hero__accent">mic check</span>.
         </h1>
         <p className="hero__sub">
-          One critic. One boombox. Nine classic records out of the crate — rated on
-          the classic 5-mic scale. Click a cover, read the review, keep the loop on.
+          One critic. One boombox. Sixteen classic records out of the crate — rated on
+          the classic 5-mic scale. Click a cover, read the review, drop your rating,
+          keep the loop on.
         </p>
       </section>
 
@@ -37,7 +38,7 @@ export default function App() {
           <h2 className="section-title">
             <span className="section-title__badge">Side A</span> The Record Bin
           </h2>
-          <p className="section-sub">Nine albums, zero filler. Hover, click, review.</p>
+          <p className="section-sub">Sixteen albums, zero filler. Hover, click, review.</p>
         </div>
         <ul className="grid" aria-label="Album reviews">
           {albums.map((album) => (
