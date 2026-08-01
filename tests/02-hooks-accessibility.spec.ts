@@ -17,7 +17,7 @@ test.describe("Track 02 — Hooks (accessibility flows)", () => {
 
   test("the review dialog passes the axe scan", async ({ boombox, a11yScan }) => {
     await boombox.goto();
-    await boombox.openReview("neon-cypher");
+    await boombox.openReview("illmatic");
 
     const results = await a11yScan();
     expect(seriousViolations(results), JSON.stringify(seriousViolations(results), null, 2)).toEqual([]);
@@ -38,11 +38,11 @@ test.describe("Track 02 — Hooks (accessibility flows)", () => {
 
   test("the dialog is announced as a modal dialog", async ({ page, boombox }) => {
     await boombox.goto();
-    await boombox.openReview("sample-city");
+    await boombox.openReview("36-chambers");
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveAttribute("aria-modal", "true");
-    await expect(dialog).toHaveAccessibleName(/Sample City/i);
+    await expect(dialog).toHaveAccessibleName(/Enter the Wu-Tang/i);
   });
 });

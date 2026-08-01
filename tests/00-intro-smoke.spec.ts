@@ -30,11 +30,11 @@ test.describe("Intro — the crate opens", () => {
 
   test("clicking a card opens the review in a dialog", async ({ page, boombox }) => {
     await boombox.goto();
-    await boombox.openReview("boombox-chronicles");
+    await boombox.openReview("illmatic");
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("Boombox Chronicles");
+    await expect(dialog).toContainText("Illmatic");
     await expect(dialog).toContainText("5 mics");
   });
 });

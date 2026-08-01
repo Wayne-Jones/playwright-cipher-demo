@@ -21,7 +21,8 @@ test.describe("Track 03 — Bars (visual stability)", () => {
   });
 
   test("cards hold their box while covers stream in", async ({ page }) => {
-    const first = page.locator('[data-album="verbal-graffiti"]');
+    await page.evaluate(() => document.fonts.ready);
+    const first = page.locator('[data-album="illmatic"]');
     const sizeBefore = await first.boundingBox();
     expect(sizeBefore).not.toBeNull();
 

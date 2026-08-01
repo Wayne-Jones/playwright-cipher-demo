@@ -17,6 +17,7 @@ export function AlbumCard({ album, onOpen, isOpen }: AlbumCardProps) {
           alt={`${album.title} album cover`}
           title={album.title}
           artist={album.artist}
+          colors={album.colors}
         />
         <span className="card__mic-badge" aria-hidden="true">
           {album.mics}★

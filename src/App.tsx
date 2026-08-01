@@ -11,9 +11,9 @@ export default function App() {
       <header className="site__header">
         <a href="#" className="brand">
           <span className="brand__mark" aria-hidden="true">
-            ◼
+            ►
           </span>
-          <span className="brand__name">BOOMBOX REVIEWS</span>
+          <span className="brand__name">Boombox Reviews</span>
         </a>
         <nav className="site__nav" aria-label="Site sections">
           <a href="#albums">Albums</a>
@@ -23,35 +23,21 @@ export default function App() {
       </header>
 
       <section className="hero">
-        <div className="ticker" aria-hidden="true">
-          <div className="ticker__track">
-            {Array.from({ length: 2 }, (_, i) => (
-              <span key={i} className="ticker__text">
-                ★ 5 MICS OR NO MIC ★ FRESH OFF THE STREETS ★ RATED BY HEADS ★ NOTHING
-                BUT HEAT ★ BOOMBAP 24/7 ★
-              </span>
-            ))}
-          </div>
-        </div>
         <h1 className="hero__title">
-          EVERY ALBUM
-          <br />
-          GETS A <em>MIC CHECK</em>.
+          Every album gets a <span className="hero__accent">mic check</span>.
         </h1>
         <p className="hero__sub">
-          One critic. One boombox. Nine records out of the crate — rated with the
-          classic 5-mic scale. Click a cover, read the review, tap the boombox.
+          One critic. One boombox. Nine classic records out of the crate — rated on
+          the classic 5-mic scale. Click a cover, read the review, keep the loop on.
         </p>
       </section>
 
       <main id="albums" className="records">
         <div className="records__heading">
           <h2 className="section-title">
-            <span className="section-title__badge">SIDE A</span> The Record Bin
+            <span className="section-title__badge">Side A</span> The Record Bin
           </h2>
-          <p className="section-sub">
-            Nine albums, zero filler. Hover, click, review.
-          </p>
+          <p className="section-sub">Nine albums, zero filler. Hover, click, review.</p>
         </div>
         <ul className="grid" aria-label="Album reviews">
           {albums.map((album) => (
@@ -68,7 +54,7 @@ export default function App() {
 
       <section id="mics" className="mics-rule">
         <h2 className="section-title">
-          <span className="section-title__badge">THE RULE</span> The 5-Mic Scale
+          <span className="section-title__badge">The Rule</span> The 5-Mic Scale
         </h2>
         <ol className="mics-rule__list">
           <li>
@@ -89,11 +75,24 @@ export default function App() {
         </ol>
       </section>
 
-      <footer className="site__footer">
-        <p>© 2002 Boombox Reviews — a demo site for "The Playwright Cipher"</p>
-        <p className="site__footer-aside">
-          every line serves a purpose · rewind &amp; replay
+      <section id="cipher" className="about">
+        <h2 className="section-title">
+          <span className="section-title__badge">The Cipher</span> Why this site exists
+        </h2>
+        <p className="about__text">
+          Boombox Reviews is the live demo for{" "}
+          <a href="https://github.com/" target="_blank" rel="noreferrer">
+            The Playwright Cipher
+          </a>{" "}
+          — a talk about writing end-to-end tests the way a rapper builds a verse:
+          flow, hooks, bars, and cadence. Every album here is tested, and the tests
+          are the mixtape.
         </p>
+      </section>
+
+      <footer className="site__footer">
+        <p>© 2026 Boombox Reviews — a demo site for "The Playwright Cipher"</p>
+        <p className="site__footer-aside">every line serves a purpose · rewind &amp; replay</p>
       </footer>
 
       {activeAlbum && (

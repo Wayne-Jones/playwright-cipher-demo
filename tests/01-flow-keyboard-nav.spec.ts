@@ -16,16 +16,15 @@ import { test } from "./fixtures/site";
 test.describe("Track 01 — Flow (keyboard navigation)", () => {
   test.beforeEach(async ({ page, boombox }) => {
     await boombox.goto();
-    await boombox.openReview("verbal-graffiti");
-    await expect(page.getByText("Every line lands with the precision")).toBeVisible();
+    await boombox.openReview("illmatic");
+    await expect(page.getByText("Ten tracks, zero filler")).toBeVisible();
   });
 
   test("focus lands inside the dialog when it opens", async ({ page }) => {
     const dialog = page.getByRole("dialog");
-    const active = page.locator(":focus");
 
     await expect(dialog).toBeVisible();
-    await expect(active).toContainText("Verbal Graffiti");
+    await expect(dialog.locator(":focus")).toHaveCount(1);
   });
 
   test("Tab orbits inside the dialog and never escapes to the page behind", async ({ page }) => {
@@ -44,7 +43,7 @@ test.describe("Track 01 — Flow (keyboard navigation)", () => {
   test("Escape closes the dialog and returns focus to the review trigger", async ({
     page,
   }) => {
-    const trigger = page.locator('[data-album="verbal-graffiti"]').getByRole("button");
+    const trigger = page.locator('[data-album="illmatic"]').getByRole("button");
 
     await page.keyboard.press("Escape");
 

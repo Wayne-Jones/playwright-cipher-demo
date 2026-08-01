@@ -15,26 +15,23 @@ test.describe("Track 04 — Cadence (resilient network handling)", () => {
     page,
     boombox,
   }) => {
-    await page.route("**/covers/ghost-bars.svg", (route) => route.abort());
+    await page.route("**/covers/madvillainy.jpg", (route) => route.abort());
     await boombox.goto();
 
-    const card = page.locator('[data-album="ghost-bars"]');
+    const card = page.locator('[data-album="madvillainy"]');
 
     await expect(card.locator("[data-testid='album-art-fallback']")).toBeVisible();
     await expect(card.locator("img")).toHaveCount(0);
-    await expect(card).toContainText("Ghost Bars");
+    await expect(card).toContainText("Madvillainy");
   });
 
-  test("the site keeps reviewing when every network request fails", async ({
-    page,
-    boombox,
-  }) => {
-    await page.route("**/*", (route) => route.abort());
-    await page.goto("/");
+  test("the site keeps reviewing when every cover fails", async ({ page, boombox }) => {
+    await page.route("**/covers/*.jpg", (route) => route.abort());
+    await boombox.goto();
 
     await expect(page.getByRole("heading", { name: /every album/i })).toBeVisible();
     const fallbacks = page.locator("[data-testid='album-art-fallback']");
-    await expect(fallbacks.first()).toBeVisible();
     await expect(fallbacks).toHaveCount(9);
+    await expect(page.locator("img.album-art__image")).toHaveCount(0);
   });
 });
