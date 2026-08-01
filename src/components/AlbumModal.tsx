@@ -58,8 +58,23 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
           </div>
           <p className="modal__review">{album.review}</p>
           <div className="modal__row">
-            <RateAlbum slug={album.slug} />
-            <Comments slug={album.slug} />
+            <div className="modal__tracklist">
+              <h3 className="modal__subhead">Tracklist</h3>
+              <ol className="tracklist" data-testid="tracklist">
+                {album.tracklist.map((track, index) => (
+                  <li key={track} className="tracklist__item">
+                    <span className="tracklist__index" aria-hidden="true">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {track}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="modal__listener">
+              <RateAlbum slug={album.slug} />
+              <Comments slug={album.slug} />
+            </div>
           </div>
         </div>
       </div>

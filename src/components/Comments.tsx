@@ -11,18 +11,50 @@ interface CommentsProps {
   slug: string;
 }
 
+const key = (slug: string) => `boombox:comments:${slug}`;
+
+function load(slug: string): CommentItem[] {
+  try {
+    return JSON.parse(localStorage.getItem(key(slug)) ?? "[]") as CommentItem[];
+  } catch {
+    return [];
+  }
+}
+
+function save(slug: string, comments: CommentItem[]) {
+  try {
+    localStorage.setItem(key(slug), JSON.stringify(comments));
+  } catch {
+    // storage unavailable — the thread lives for this visit only
+  }
+}
+
 /**
- * B-Side v1 — broken on purpose: the form submits,
- * but the comment evaporates. No state update, no persistence.
+ * The B-Side: listeners drop comments on the record.
+ * The thread is stored in localStorage, so it survives a reload.
  */
 export function Comments({ slug }: CommentsProps) {
-  const [comments] = useState<CommentItem[]>([]);
+  const [comments, setComments] = useState<CommentItem[]>(() => load(slug));
   const [name, setName] = useState("");
   const [text, setText] = useState("");
 
   const add = (event: FormEvent) => {
     event.preventDefault();
-    // v1 bug: nothing happens. The thread never grows.
+    const comment = text.trim();
+    if (!comment) return;
+
+    const next = [
+      ...comments,
+      {
+        id: crypto.randomUUID(),
+        name: name.trim() || "Anonymous",
+        text: comment,
+      },
+    ];
+    setComments(next);
+    save(slug, next);
+    setName("");
+    setText("");
   };
 
   return (

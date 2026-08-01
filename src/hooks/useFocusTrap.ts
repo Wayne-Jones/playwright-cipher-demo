@@ -1,9 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * The focus trap — keeps Tab on the beat.
- * Focus orbits inside the dialog, and Escape drops the needle.
- */
 export function useFocusTrap(onClose: () => void) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +16,14 @@ export function useFocusTrap(onClose: () => void) {
         )
       ).filter((el) => el.offsetParent !== null);
 
-    const focusFirst = () => focusables()[0]?.focus() ?? container.focus();
+    const focusFirst = () => {
+      const items = focusables();
+      if (items.length > 0) {
+        items[0].focus();
+      } else {
+        container.focus();
+      }
+    };
 
     focusFirst();
 
