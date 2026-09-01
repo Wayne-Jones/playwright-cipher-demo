@@ -7,13 +7,17 @@ import type { AxeResults } from "axe-core";
  * Encapsulates all UI interactions in one place.
  */
 export class BoomboxPageObject {
-  constructor(public readonly page: import("@playwright/test").Page) {}
+  page: import("@playwright/test").Page;
+
+  constructor(page: import("@playwright/test").Page) {
+    this.page = page;
+  }
 
   /** Navigate to the homepage and wait for it to load */
   async goto() {
     await this.page.goto("/");
     await expect(
-      this.page.getByRole("heading", { name: /every album/i })
+      this.page.getByRole("heading", { name: /every album/i }),
     ).toBeVisible();
   }
 
@@ -92,7 +96,7 @@ export const test = base.extend<{
     await use(bot);
   },
   a11yScan: async ({ page }, use) => {
-    use(async () => new AxeBuilder({ page }).analyze());
+    await use(async () => new AxeBuilder({ page }).analyze());
   },
 });
 
@@ -104,6 +108,6 @@ export { expect };
  */
 export function seriousViolations(results: AxeResults) {
   return results.violations.filter(
-    (v) => v.impact === "critical" || v.impact === "serious"
+    (v) => v.impact === "critical" || v.impact === "serious",
   );
 }
