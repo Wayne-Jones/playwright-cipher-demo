@@ -6,12 +6,4 @@
     "typeCheck": true
   },
   "jsPlugins": ["eslint-plugin-playwright"],
-  "overrides": [
-    {
-      "files": ["tests/**", "scripts/**"],
-      "rules": {
-        "react/rules-of-hooks": "off"
-      }
-    }
-  ]
 }

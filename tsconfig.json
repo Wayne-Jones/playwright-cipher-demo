@@ -3,7 +3,7 @@
     "target": "es2025",
     "lib": ["ESNext", "DOM"],
     "module": "esnext",
-    "types": ["vite/client", "@playwright/test", "node"],
+    "types": ["vite/client", "@playwright/test"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -18,10 +18,9 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src",
-    "tests",
-    "scripts",
-    "scripts/**/*.mts",
+    "src/**/*",
+    "tests/**/*",
+    "scripts/**/*",
     "vite.config.ts",
     "playwright.config.ts"
   ]
