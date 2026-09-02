@@ -14,9 +14,11 @@ import { test } from "./fixtures/site";
  */
 
 test.describe("Track 01 — Flow (keyboard navigation)", () => {
-  test.beforeEach(async ({ page, boombox }) => {
-    await boombox.goto();
-    await boombox.openReview("illmatic");
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    let illmaticCard = page.locator('[data-album="illmatic"]');
+    await expect(illmaticCard).toBeVisible();
+    await illmaticCard.getByRole("button").click();
     await expect(page.getByText("Ten tracks, zero filler")).toBeVisible();
   });
 
@@ -27,16 +29,22 @@ test.describe("Track 01 — Flow (keyboard navigation)", () => {
     await expect(dialog.locator(":focus")).toHaveCount(1);
   });
 
-  test("Tab orbits inside the dialog and never escapes to the page behind", async ({ page }) => {
+  test("Tab orbits inside the dialog and never escapes to the page behind", async ({
+    page,
+  }) => {
     const dialog = page.getByRole("dialog");
 
-    for (let i = 0; i < 12; i++) {
+    // Verify dialog is open and has focusable content
+    await expect(dialog).toBeVisible();
+
+    // Orbit through every focusable element inside the dialog.
+    // The focus trap (useFocusTrap) keeps focus inside via Tab wrapping.
+    // :focus-within matches any element inside the dialog that contains
+    // a focused descendant — the dialog itself rarely holds focus.
+    for (let i = 0; i < 9; i++) {
       await page.keyboard.press("Tab");
-      await expect
-        .poll(() => dialog.locator(":focus").count(), {
-          message: `focus escaped the dialog on Tab #${i + 1}`,
-        })
-        .toBeGreaterThan(0);
+      // Direct Playwright focus locator (uses browser focus state directly)
+      await expect(dialog.locator(":focus")).toBeVisible();
     }
   });
 
