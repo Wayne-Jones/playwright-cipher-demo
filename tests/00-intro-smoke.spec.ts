@@ -13,9 +13,10 @@ test.describe("Sound Check - Smoke Test for Website", () => {
     page,
   }) => {
     await page.goto("/");
-    let heading = page.getByRole("heading", { name: /every album/i });
+    let heading = page.getByRole('heading', { name: 'Every album gets a mic check.' })
     await expect(heading).toBeVisible();
-    let albumCards = page.locator("[data-testid='album-card']");
+    let albumList = page.getByRole('list', { name: 'Album reviews' });
+    let albumCards = albumList.getByRole('listitem');
     await expect(albumCards).toHaveCount(albums.length);
   });
 });
