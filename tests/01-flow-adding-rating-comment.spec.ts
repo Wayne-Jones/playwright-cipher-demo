@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 /**
  * TRACK 01 — "Flow"
  *
- * These tests describe the keyboard journey a user takes:
+ * These tests describe the journey a user takes:
  *   1. User navigates to the homepage and clicks on an album review button.
  *   2. User rates the album and album art.
  *   3. User adds a comment review for the album.
