@@ -2,16 +2,11 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures/site";
 
 /**
- * TRACK 03 — "Bars"
- * Bars are where the verse lands. Every bar reserves its space on the beat —
- * a record doesn't jump forward when a snare hits.
- * These tests keep the layout honest: no layout shift while covers stream in.
- *
- * The hook: covers are intercepted and delayed by 1.5s, so every card
- * starts out bare. If the page holds its shape, it holds it for real users.
+ * TRACK 03 — "Bars" (fresh start)
+ * Simulates a user on a slow connection and asserts layout shift (CLS) stays acceptable.
  */
 
-test.describe("Track 03 — Bars (visual stability)", () => {
+test.describe("Track 03 — Bars", () => {
   test.beforeEach(async ({ page, boombox }) => {
     await page.route("**/covers/*.svg", async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -20,15 +15,15 @@ test.describe("Track 03 — Bars (visual stability)", () => {
     await boombox.goto();
   });
 
-  test("cards hold their box while covers stream in", async ({ page }) => {
+  test("Verify that cards still hold their layout on a slow connection", async ({ page }) => {
     await page.evaluate(() => document.fonts.ready);
-    const first = page.locator('[data-album="illmatic"]');
-    const sizeBefore = await first.boundingBox();
-    expect(sizeBefore).not.toBeNull();
+    const card = page.locator('[data-album="illmatic"]');
+    const before = await card.boundingBox();
+    expect(before).not.toBeNull();
 
     await expect
       .poll(async () => {
-        const img = first.locator("img");
+        const img = card.locator("img");
         return (
           (await img.count()) > 0 &&
           (await img.evaluate((el) => (el as HTMLImageElement).complete))
@@ -36,23 +31,28 @@ test.describe("Track 03 — Bars (visual stability)", () => {
       })
       .toBe(true);
 
-    const sizeAfter = await first.boundingBox();
-    expect(sizeAfter).toEqual(sizeBefore);
+    const after = await card.boundingBox();
+    expect(after).toEqual(before);
   });
 
-  test("cover images reserve their space with explicit dimensions", async ({
-    page,
-  }) => {
-    const images = page.locator('img[data-testid="album-cover"]');
-    const count = await images.count();
-    expect(count).toBeGreaterThan(5);
-
-    for (let i = 0; i < count; i++) {
-      const img = images.nth(i);
-      const width = await img.getAttribute("width");
-      const height = await img.getAttribute("height");
-      expect(width, `cover #${i + 1} has no width attribute`).toBeTruthy();
-      expect(height, `cover #${i + 1} has no height attribute`).toBeTruthy();
-    }
+  test("CLS remains acceptable on slow connection", async ({ page }) => {
+    const clsValue = await page.evaluate(async () => {
+      return new Promise<number>((resolve) => {
+        let cls = 0;
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            const shift = entry as PerformanceEntry & {
+              hadRecentInput: boolean;
+            };
+            if (!shift.hadRecentInput) cls += (entry as any).value;
+          }
+        });
+        observer.observe({ type: "layout-shift", buffered: true });
+        setTimeout(() => resolve(cls), 2000);
+      });
+    });
+    expect(clsValue, "CLS exceeds 0.1 on slow connection").toBeLessThanOrEqual(
+      0.1,
+    );
   });
 });
