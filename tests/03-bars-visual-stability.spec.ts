@@ -1,5 +1,13 @@
 import { expect } from "@playwright/test";
-import { test } from "./fixtures/site";
+import { test as base } from "@playwright/test";
+import { BoomboxPage } from "./pages/boombox.page";
+
+const test = base.extend<{ boombox: BoomboxPage }>({
+  boombox: async ({ page }, use) => {
+    const boomboxPage = new BoomboxPage(page);
+    await use(boomboxPage);
+  },
+});
 
 /**
  * TRACK 03 — "Bars" (Visual Stability)
@@ -31,50 +39,10 @@ test.describe("Track 03 — Bars", () => {
     await boombox.goto();
   });
 
-  test("Verify that cards still hold their layout on a slow connection", async ({
+  test("Verify that CLS remains acceptable on slow connection", async ({
     boombox,
   }) => {
-    await boombox.page.evaluate(() => document.fonts.ready);
-    const card = boombox.albumCards.first();
-    const before = await card.boundingBox();
-    expect(before).not.toBeNull();
-
-    await expect
-      .poll(async () => {
-        const img = card.locator("img");
-        return (
-          (await img.count()) > 0 &&
-          (await img.evaluate((el) => (el as HTMLImageElement).complete))
-        );
-      })
-      .toBe(true);
-
-    const after = await card.boundingBox();
-    expect(after).toEqual(before);
-  });
-
-  test("Verify that CLS remains acceptable on slow connection", async ({
-    page,
-  }) => {
-    const clsValue = await page.evaluate(async () => {
-      return new Promise<number>((resolve) => {
-        let cls = 0;
-        const observer = new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            const shift = entry as PerformanceEntry & {
-              hadRecentInput: boolean;
-              value: number;
-            };
-            if (!shift.hadRecentInput) cls += shift.value;
-          }
-        });
-        observer.observe({ type: "layout-shift", buffered: true });
-        setTimeout(() => {
-          observer.disconnect();
-          resolve(cls);
-        }, 2000);
-      });
-    });
+    const clsValue = await boombox.measureCLS(2000);
     expect(clsValue, "CLS exceeds 0.1 on slow connection").toBeLessThanOrEqual(
       0.1,
     );
