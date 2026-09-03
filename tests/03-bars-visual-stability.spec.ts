@@ -2,8 +2,14 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures/site";
 
 /**
- * TRACK 03 — "Bars" (fresh start)
- * Simulates a user on a slow connection and asserts layout shift (CLS) stays acceptable.
+ * TRACK 03 — "Bars" (Visual Stability)
+ *
+ * Bars are where the verse lands. Every bar reserves its space on the beat —
+ * a record doesn't jump forward when a snare hits.
+ * These tests keep the layout honest: no layout shift while covers stream in.
+ *
+ * The hook: covers are intercepted and delayed by 1.5s, so every card
+ * starts out bare. If the page holds its shape, it holds it for real users.
  */
 
 test.describe("Track 03 — Bars", () => {
@@ -12,12 +18,24 @@ test.describe("Track 03 — Bars", () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       await route.continue();
     });
+
+    // Simulate slow connection using CDP throttling
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Network.emulateNetworkConditions", {
+      offline: false,
+      downloadThroughput: 400 * 1024,
+      uploadThroughput: 400 * 1024,
+      latency: 400,
+    });
+
     await boombox.goto();
   });
 
-  test("Verify that cards still hold their layout on a slow connection", async ({ page }) => {
-    await page.evaluate(() => document.fonts.ready);
-    const card = page.locator('[data-album="illmatic"]');
+  test("Verify that cards still hold their layout on a slow connection", async ({
+    boombox,
+  }) => {
+    await boombox.page.evaluate(() => document.fonts.ready);
+    const card = boombox.albumCards.first();
     const before = await card.boundingBox();
     expect(before).not.toBeNull();
 
@@ -35,7 +53,9 @@ test.describe("Track 03 — Bars", () => {
     expect(after).toEqual(before);
   });
 
-  test("CLS remains acceptable on slow connection", async ({ page }) => {
+  test("Verify that CLS remains acceptable on slow connection", async ({
+    page,
+  }) => {
     const clsValue = await page.evaluate(async () => {
       return new Promise<number>((resolve) => {
         let cls = 0;
@@ -43,12 +63,16 @@ test.describe("Track 03 — Bars", () => {
           for (const entry of list.getEntries()) {
             const shift = entry as PerformanceEntry & {
               hadRecentInput: boolean;
+              value: number;
             };
-            if (!shift.hadRecentInput) cls += (entry as any).value;
+            if (!shift.hadRecentInput) cls += shift.value;
           }
         });
         observer.observe({ type: "layout-shift", buffered: true });
-        setTimeout(() => resolve(cls), 2000);
+        setTimeout(() => {
+          observer.disconnect();
+          resolve(cls);
+        }, 2000);
       });
     });
     expect(clsValue, "CLS exceeds 0.1 on slow connection").toBeLessThanOrEqual(
