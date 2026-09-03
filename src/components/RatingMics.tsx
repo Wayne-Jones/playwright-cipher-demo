@@ -13,11 +13,7 @@ export function RatingMics({ mics }: RatingMicsProps) {
       aria-label={`${mics} out of 5 mics`}
     >
       {Array.from({ length: mics }, (_, i) => (
-        <span
-          key={i}
-          aria-hidden="true"
-          className="text-xl font-bold text-green-700 leading-none"
-        >
+        <span key={i} aria-hidden="true" className="leading-none">
           {FULL}
         </span>
       ))}

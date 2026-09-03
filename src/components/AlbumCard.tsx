@@ -28,7 +28,7 @@ export function AlbumCard({ album, onOpen, isOpen }: AlbumCardProps) {
         </span>
       </div>
       <div className="flex-1">
-        <h3 className="text-lg font-bold text-white">{album.title}</h3>
+        <h3 className="text-lg font-bold text-gray-400">{album.title}</h3>
         <p className="text-sm text-gray-400">
           {album.artist} · {album.year}
         </p>

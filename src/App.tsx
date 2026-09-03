@@ -45,7 +45,7 @@ export default function App() {
       </header>
 
       <section
-        className="hero py-14 px-8 border-b border-border-custom"
+        className="py-14 px-8 border-b border-border-custom"
         style={{
           background:
             "radial-gradient(120% 140% at 80% -20%, rgba(30, 215, 96, 0.18), transparent 55%), radial-gradient(100% 120% at 10% 110%, rgba(29, 185, 84, 0.12), transparent 50%), var(--surface)",

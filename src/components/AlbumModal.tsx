@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { Album } from "../data/albums";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { AlbumArt } from "./AlbumArt";
@@ -13,22 +13,30 @@ interface AlbumModalProps {
 
 export function AlbumModal({ album, onClose }: AlbumModalProps) {
   const titleId = useId();
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const containerRef = useFocusTrap(onClose);
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (!dialog.open) dialog.showModal();
+  }, []);
+
   return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm grid place-items-center z-50 p-6"
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
       onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === dialogRef.current) onClose();
       }}
+      className="bg-card border border-border-custom rounded-xl shadow-2xl w-full max-w-3xl max-h-[88vh] overflow-auto p-7 m-auto backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+      style={{ gridTemplateColumns: "minmax(220px, 300px) 1fr" }}
+      aria-labelledby={titleId}
     >
       <div
         ref={containerRef}
-        className="bg-card border border-border-custom rounded-xl shadow-2xl w-full max-w-3xl max-h-[88vh] overflow-auto grid gap-6 p-7 relative"
+        className="grid gap-6 relative"
         style={{ gridTemplateColumns: "minmax(220px, 300px) 1fr" }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
       >
         <button
           className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 text-white text-xl font-bold hover:bg-card-hover transition-transform hover:scale-105"
@@ -48,7 +56,7 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
         </div>
         <div className="flex flex-col gap-4">
           <h2
-            className="text-3xl font-black leading-tight tracking-tight pr-10"
+            className="text-3xl font-black leading-tight tracking-tight pr-10 text-white"
             id={titleId}
             style={{
               fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
@@ -95,7 +103,7 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
                     className="flex gap-2 items-baseline text-sm text-gray-300"
                   >
                     <span
-                      className="text-xs font-bold text-green min-w-[26px]"
+                      className="text-xs font-bold text-green min-w-6.5"
                       aria-hidden="true"
                     >
                       {String(index + 1).padStart(2, "0")}
@@ -112,6 +120,6 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
