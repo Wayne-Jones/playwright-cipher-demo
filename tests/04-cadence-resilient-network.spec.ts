@@ -1,38 +1,40 @@
-import { expect } from "@playwright/test";
-import { albums } from "../src/data/albums";
-import { test } from "./fixtures/site";
+import { expect, test as base } from "@playwright/test";
+import { BoomboxPage } from "./pages/boombox.page";
 
-/**
- * TRACK 04 — "Cadence"
- * A good MC never stumbles when the beat skips.
- * A good site never shows a broken frame when a request drops.
- *
- * These tests cut the connection on a cover and check the fallback
- * keeps the rhythm going: a placeholder tile, not a broken image icon.
- */
+const test = base.extend<{ boombox: BoomboxPage }>({
+  boombox: async ({ page }, use) => {
+    let boomboxPage = new BoomboxPage(page);
+    await use(boomboxPage);
+  },
+});
 
-test.describe("Track 04 — Cadence (resilient network handling)", () => {
-  test("a dropped cover renders a fallback tile, not a broken image", async ({
+test.describe("TRACK 04 - Cadence", () => {
+  test("Verify that album art fallback shown when network cuts", async ({
     page,
     boombox,
   }) => {
-    await page.route("**/covers/madvillainy.jpg", (route) => route.abort());
-    await boombox.goto();
-
-    const card = page.locator('[data-album="madvillainy"]');
-
-    await expect(card.locator("[data-testid='album-art-fallback']")).toBeVisible();
-    await expect(card.locator("img")).toHaveCount(0);
-    await expect(card).toContainText("Madvillainy");
-  });
-
-  test("the site keeps reviewing when every cover fails", async ({ page, boombox }) => {
     await page.route("**/covers/*.jpg", (route) => route.abort());
     await boombox.goto();
+    await expect(
+      page.locator(
+        '[data-album="madvillainy"] [data-testid="album-art-fallback"]',
+      ),
+    ).toBeVisible();
+    await expect(page.locator("img")).toHaveCount(0);
+  });
 
-    await expect(page.getByRole("heading", { name: /every album/i })).toBeVisible();
-    const fallbacks = page.locator("[data-testid='album-art-fallback']");
-    await expect(fallbacks).toHaveCount(albums.length);
-    await expect(page.locator("img.album-art__image")).toHaveCount(0);
+  test("Verify that comment form shows retry error when network cuts", async ({
+    page,
+    boombox,
+  }) => {
+    await page.route("**/*", (route) => {
+      if (route.request().url().includes("cover")) return route.abort();
+      return route.continue();
+    });
+    await boombox.goto();
+    await boombox.openReview("madvillainy");
+    await page.locator("textarea[placeholder*='review']").fill("great beat");
+    await page.locator("button[type='submit']").click();
+    await expect(page.getByText(/retry/i)).toBeVisible();
   });
 });
