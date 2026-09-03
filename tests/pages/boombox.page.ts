@@ -108,4 +108,48 @@ export class BoomboxPage {
   async scanForAccessibility() {
     return new AxeBuilder({ page: this.page }).analyze();
   }
+
+  /** Measure CLS (Cumulative Layout Shift) over a duration */
+  async measureCLS(durationMs = 2000): Promise<number> {
+    return this.page.evaluate(
+      (duration) =>
+        new Promise<number>((resolve) => {
+          let cls = 0;
+          const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              const shift = entry as PerformanceEntry & {
+                hadRecentInput: boolean;
+                value: number;
+              };
+              if (!shift.hadRecentInput) cls += shift.value;
+            }
+          });
+          observer.observe({ type: "layout-shift", buffered: true });
+          setTimeout(() => {
+            observer.disconnect();
+            resolve(cls);
+          }, duration);
+        }),
+      durationMs,
+    );
+  }
+
+  /** Wait for album card images to load */
+  async waitForImagesToLoad(locator: import("@playwright/test").Locator) {
+    await expect
+      .poll(async () => {
+        const img = locator.locator("img");
+        return (
+          (await img.count()) > 0 &&
+          (await img.evaluate((el) => (el as HTMLImageElement).complete))
+        );
+      })
+      .toBe(true);
+  }
+
+  /** Get bounding box of first album card */
+  async getFirstCardBoundingBox() {
+    const card = this.albumCards.first();
+    return card.boundingBox();
+  }
 }
