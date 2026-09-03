@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import type { Album } from "../data/albums";
-import { useFocusTrap } from "../hooks/useFocusTrap";
+
 import { AlbumArt } from "./AlbumArt";
 import { Comments } from "./Comments";
 import { RateAlbum } from "./RateAlbum";
@@ -14,12 +14,13 @@ interface AlbumModalProps {
 export function AlbumModal({ album, onClose }: AlbumModalProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const containerRef = useFocusTrap(onClose);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) {
+      dialog.showModal();
+    }
   }, []);
 
   return (
@@ -34,12 +35,11 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
       aria-labelledby={titleId}
     >
       <div
-        ref={containerRef}
         className="grid gap-6 relative"
         style={{ gridTemplateColumns: "minmax(220px, 300px) 1fr" }}
       >
         <button
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 text-white text-xl font-bold hover:bg-card-hover transition-transform hover:scale-105"
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 text-white text-xl font-bold hover:bg-card-hover transition-transform:hover:scale-105"
           onClick={onClose}
           aria-label="Close dialog"
         >
