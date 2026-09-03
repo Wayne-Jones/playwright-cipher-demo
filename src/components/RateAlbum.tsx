@@ -45,7 +45,7 @@ export function RateAlbum({ slug }: RateAlbumProps) {
           <button
             key={n}
             type="button"
-            className={n <= rating ? "rate__mic rate__mic--on" : "rate__mic"}
+            className={n <= rating ? "text-xl font-bold text-green-700 scale-110 transition-transform" : "text-xl font-bold text-gray-500 opacity-50 hover:opacity-80 transition-opacity"}
             aria-label={`${n} out of 5 mics`}
             aria-pressed={n <= rating}
             onClick={() => select(n)}

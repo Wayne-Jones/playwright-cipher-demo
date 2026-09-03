@@ -12,20 +12,32 @@ test.describe("Track 02 — Hooks (accessibility flows)", () => {
   test("the record bin passes the axe scan", async ({ boombox, a11yScan }) => {
     await boombox.goto();
     const results = await a11yScan();
-    expect(seriousViolations(results), JSON.stringify(seriousViolations(results), null, 2)).toEqual([]);
+    expect(
+      seriousViolations(results),
+      JSON.stringify(seriousViolations(results), null, 2),
+    ).toEqual([]);
   });
 
-  test("the review dialog passes the axe scan", async ({ boombox, a11yScan }) => {
+  test("the review dialog passes the axe scan", async ({
+    boombox,
+    a11yScan,
+  }) => {
     await boombox.goto();
     await boombox.openReview("illmatic");
 
     const results = await a11yScan();
-    expect(seriousViolations(results), JSON.stringify(seriousViolations(results), null, 2)).toEqual([]);
+    expect(
+      seriousViolations(results),
+      JSON.stringify(seriousViolations(results), null, 2),
+    ).toEqual([]);
   });
 
-  test("every album cover has descriptive alt text", async ({ page, boombox }) => {
+  test("every album cover has descriptive alt text", async ({
+    page,
+    boombox,
+  }) => {
     await boombox.goto();
-    const arts = page.locator("img.album-art__image");
+    const arts = page.locator("img[alt*='album cover']");
     const count = await arts.count();
     expect(count).toBeGreaterThan(5);
 
@@ -36,7 +48,10 @@ test.describe("Track 02 — Hooks (accessibility flows)", () => {
     }
   });
 
-  test("the dialog is announced as a modal dialog", async ({ page, boombox }) => {
+  test("the dialog is announced as a modal dialog", async ({
+    page,
+    boombox,
+  }) => {
     await boombox.goto();
     await boombox.openReview("36-chambers");
 

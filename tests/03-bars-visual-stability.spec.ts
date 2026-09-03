@@ -29,7 +29,10 @@ test.describe("Track 03 — Bars (visual stability)", () => {
     await expect
       .poll(async () => {
         const img = first.locator("img");
-        return (await img.count()) > 0 && (await img.evaluate((el) => (el as HTMLImageElement).complete));
+        return (
+          (await img.count()) > 0 &&
+          (await img.evaluate((el) => (el as HTMLImageElement).complete))
+        );
       })
       .toBe(true);
 
@@ -37,8 +40,10 @@ test.describe("Track 03 — Bars (visual stability)", () => {
     expect(sizeAfter).toEqual(sizeBefore);
   });
 
-  test("cover images reserve their space with explicit dimensions", async ({ page }) => {
-    const images = page.locator("img.album-art__image");
+  test("cover images reserve their space with explicit dimensions", async ({
+    page,
+  }) => {
+    const images = page.locator('img[data-testid="album-cover"]');
     const count = await images.count();
     expect(count).toBeGreaterThan(5);
 

@@ -17,22 +17,27 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
 
   return (
     <div
-      className="modal-backdrop"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm grid place-items-center z-50 p-6"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
       <div
         ref={containerRef}
-        className="modal"
+        className="bg-card border border-border-custom rounded-xl shadow-2xl w-full max-w-3xl max-h-[88vh] overflow-auto grid gap-6 p-7 relative"
+        style={{ gridTemplateColumns: "minmax(220px, 300px) 1fr" }}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button className="modal__close" onClick={onClose}>
+        <button
+          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 text-white text-xl font-bold hover:bg-card-hover transition-transform hover:scale-105"
+          onClick={onClose}
+          aria-label="Close dialog"
+        >
           ×
         </button>
-        <div className="modal__art">
+        <div className="flex flex-col">
           <AlbumArt
             src={album.cover}
             alt={`${album.title} album cover`}
@@ -41,29 +46,58 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
             colors={album.colors}
           />
         </div>
-        <div className="modal__body">
-          <h2 className="modal__title" id={titleId}>
+        <div className="flex flex-col gap-4">
+          <h2
+            className="text-3xl font-black leading-tight tracking-tight pr-10"
+            id={titleId}
+            style={{
+              fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
             {album.title}
           </h2>
-          <p className="modal__artist">
+          <p className="text-gray-400 text-base">
             {album.artist} · {album.year} · {album.label}
           </p>
           <RatingMics mics={album.mics} />
-          <div className="modal__tags">
+          <div className="flex flex-wrap gap-2">
             {album.tags.map((tag) => (
-              <span key={tag} className="tag">
+              <span
+                key={tag}
+                className="px-3 py-1 text-xs font-semibold rounded-full bg-border-custom text-white"
+              >
                 #{tag}
               </span>
             ))}
           </div>
-          <p className="modal__review">{album.review}</p>
-          <div className="modal__row">
-            <div className="modal__tracklist">
-              <h3 className="modal__subhead">Tracklist</h3>
-              <ol className="tracklist" data-testid="tracklist">
+          <p
+            className="text-gray-300 leading-loose border-t border-border-custom pt-4 max-w-xl"
+            style={{ fontSize: "0.95rem", lineHeight: 1.7 }}
+          >
+            {album.review}
+          </p>
+          <div
+            className="grid gap-6 pt-5 border-t border-border-custom"
+            style={{ gridTemplateColumns: "1fr 1fr" }}
+          >
+            <div>
+              <h3 className="text-xs font-extrabold tracking-widest uppercase text-gray-400 mb-3">
+                Tracklist
+              </h3>
+              <ol
+                className="list-none m-0 p-0 space-y-2"
+                data-testid="tracklist"
+              >
                 {album.tracklist.map((track, index) => (
-                  <li key={track} className="tracklist__item">
-                    <span className="tracklist__index" aria-hidden="true">
+                  <li
+                    key={track}
+                    className="flex gap-2 items-baseline text-sm text-gray-300"
+                  >
+                    <span
+                      className="text-xs font-bold text-green min-w-[26px]"
+                      aria-hidden="true"
+                    >
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     {track}
@@ -71,7 +105,7 @@ export function AlbumModal({ album, onClose }: AlbumModalProps) {
                 ))}
               </ol>
             </div>
-            <div className="modal__listener">
+            <div>
               <RateAlbum slug={album.slug} />
               <Comments slug={album.slug} />
             </div>
