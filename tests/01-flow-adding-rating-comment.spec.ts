@@ -1,5 +1,4 @@
-import { expect } from "@playwright/test";
-import { test } from "./fixtures/site";
+import { test, expect } from "@playwright/test";
 
 /**
  * TRACK 01 — "Flow"
